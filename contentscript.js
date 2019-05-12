@@ -3,9 +3,9 @@ function AVB(video,pos,fobj){
     this.on = false;
     this.Icon = null;
     this.ctrlpanel = null;
-    this.timerid = null;
+    this.timerid1 = null;
     this.video = video;
-
+    this.vpos = null;
     pos.height ? this.h = pos.height : this.h = 24;
     pos.width ? this.w = pos.width : this.w = 24;
     pos.top ? this.t = pos.top : this.t = 10;
@@ -30,6 +30,32 @@ function AVB(video,pos,fobj){
         this.createIcon();
         this.createControlPanel();
         this.getVideoPosition();
+        this.attachMouseMoveEvent();
+    };
+    this.attachMouseMoveEvent = () => {
+        let tid1 = null;
+        window.addEventListener("mousemove",( e ) => {
+            let vpos = this.vpos;
+            if(vpos){
+                clearTimeout(tid1);
+                tid1 = setTimeout(() => {
+                    this.checkMousePosition(e,vpos)
+                },10);
+            }
+        },true);
+    };
+    this.checkMousePosition = (e,vpos) => {
+        let px = e.pageX;
+        let py = e.pageY;
+        if(vpos.left < px && px < vpos.left + vpos.width){
+            if(vpos.top < py && py < vpos.top + vpos.height){
+                this.showIcon();
+                clearTimeout(this.timerid1);
+                this.timerid1 = setTimeout(() =>{
+                    this.hideIcon();
+                },3600);
+            }
+        }
     };
     this.createIcon = () => {
         let cont = document.createElement("div");
@@ -206,11 +232,12 @@ function AVB(video,pos,fobj){
     this.getVideoPosition = () => {
         let video = this.video;
         let pos = this.getAbsolutePosition(video);
-        
         if(pos){
             this.setPosition(pos);
+            this.vpos = pos;
         }else{
             this.hideIcon(true);
+            this.vpos = null;
         }
     };
     this.getAbsolutePosition = (video)  => {
@@ -225,8 +252,9 @@ function AVB(video,pos,fobj){
             return {
                 top:top,
                 left: left,
-                width:rect.width
-            }
+                width:rect.width,
+                height:rect.height
+            };
         }
         return false;
     };
@@ -275,19 +303,6 @@ const AVBs = {
                 let avb = new AVB(video,pos,fobj);
                 this.items.push(avb);
                 this.resizeObserver.observe(video);
-
-                let tid1 = null;
-                let tid2 = null;       
-                video.parentNode.parentNode.addEventListener("mousemove",( e ) => {
-                    clearTimeout(tid1);
-                    clearTimeout(tid2);
-                    tid1 = setTimeout(() => {
-                        avb.showIcon();
-                    },10);
-                    tid2 = setTimeout(() =>{
-                        avb.hideIcon();
-                    },3600);
-                },true);
             });
         }else if (count < 8) {
             setTimeout(() => {
