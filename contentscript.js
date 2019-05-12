@@ -1,4 +1,4 @@
-function AVB(video,pos){
+function AVB(video,pos,fobj){
 
     this.on = false;
     this.elem = null;
@@ -12,8 +12,22 @@ function AVB(video,pos){
     pos.right ? this.r = pos.right : this.r = 10;
     pos.lflg ? this.lflg = true : this.lflg = false;
 
+    if(fobj){
+        this.fobj = fobj;
+    }else{
+        this.fobj = {
+            br:100,
+            co:100,
+            sa:500,
+            hu:360,
+            gr:0,
+            se:0
+        };    
+    }
+
     this.init = () => {
-        this.createIcon()
+        this.createIcon();
+        this.createContainer();
         this.getVideoPosition();
     };
     this.createIcon = () => {
@@ -53,6 +67,77 @@ function AVB(video,pos){
             elem.style.opacity = 1;
         },10);
     };
+
+
+    this.createContainer = () => {
+        let  mcont = document.createElement("div");
+        document.body.appendChild(mcont);
+        mcont.style.zIndex = 2147483647;
+        mcont.style.position = "fixed";
+        mcont.style.top = 0;
+        mcont.style.right = 0;
+        mcont.style.margin = 0;
+        mcont.style.padding = 0;
+        mcont.style.width = "200px";
+        mcont.style.height = "100%";
+        mcont.style.opacity = 1;
+        mcont.style.display = "block";
+        mcont.style.background = "red";
+        let  cont = document.createElement("div");
+        mcont.appendChild(cont); 
+
+        this.createSlideBar(300,0,1,100,"br",cont);
+        this.createSlideBar(300,0,1,100,"co",cont);
+        this.createSlideBar(500,0,1,100,"sa",cont);
+        this.createSlideBar(360,0,1,0,"hu",cont);
+        this.createSlideBar(1,0,0.1,0,"gr",cont);
+        this.createSlideBar(1,0,0.1,0,"se",cont);
+    };
+    this.createSlideBar = (max,min,step,val,name,pcont) => {
+        let  cont = document.createElement("div");
+        pcont.appendChild(cont);
+        let  range = document.createElement("input");
+        cont.appendChild(range);
+
+        range.setAttribute("type","range");
+        range.setAttribute("max",max);
+        range.setAttribute("min",min);
+        range.setAttribute("step",step);
+        range.setAttribute("value",val);
+        this.attachRangeEvent(range,name);
+    };
+    this.attachRangeEvent = (range,name) => {
+        range.setAttribute("data-val",name);
+        range.addEventListener("change",(e) => {
+            var range = e.target;
+            var name = range.getAttribute("data-val");
+            this.fobj[name] = range.value;
+            this.attachCSS();
+        });
+    }
+    this.attachCSS = () => {
+        var video = this.video;
+        var fobj = this.fobj;
+        var css = ""
+        +"brightness("+fobj.br+"%) "
+        +"contrast("+fobj.co+"%) "
+        +"saturate("+fobj.sa+"%) "
+        +"hue-rotate("+fobj.hu+"deg) "
+        +"sepia("+fobj.se+") "
+        +"grayscale("+fobj.gr+")";
+        video.style.setProperty("-webkit-filter", css, "important")
+        video.style.setProperty("filter", css, "important")
+    };
+
+
+
+
+
+
+
+
+
+
     this.resize = () => {
         this.getVideoPosition();
     };
@@ -113,7 +198,19 @@ const AVBs = {
                     right:12,
                     lflg:true
                 };
-                let avb = new AVB(video,pos);
+
+
+
+                let fobj = {
+                    br:100,
+                    co:100,
+                    sa:100,
+                    hu:0,
+                    gr:0,
+                    se:0
+                };    
+
+                let avb = new AVB(video,pos,fobj);
                 this.items.push(avb);
                 this.resizeObserver.observe(video);
 
