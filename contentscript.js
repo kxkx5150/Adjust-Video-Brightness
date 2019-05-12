@@ -1,7 +1,8 @@
 function AVB(video,pos,fobj){
 
     this.on = false;
-    this.elem = null;
+    this.Icon = null;
+    this.ctrlpanel = null;
     this.timerid = null;
     this.video = video;
 
@@ -27,7 +28,7 @@ function AVB(video,pos,fobj){
 
     this.init = () => {
         this.createIcon();
-        this.createContainer();
+        this.createControlPanel();
         this.getVideoPosition();
     };
     this.createIcon = () => {
@@ -46,10 +47,20 @@ function AVB(video,pos,fobj){
         cont.style.height = this.h + "px";
         cont.style.width = this.h + "px";
         cont.style.background = "blue";
-        this.elem = cont;
+        cont.addEventListener("click",(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            let pelem = this.ctrlpanel;
+            if(pelem.style.display == "none"){
+                this.showControlPanel();
+            }else{
+                this.hideControlpanel();
+            }
+        })
+        this.Icon = cont;
     };
     this.hideIcon = (flg) => {
-        let elem = this.elem;
+        let elem = this.Icon;
         if(elem)elem.style.opacity = 0;
         if(flg){
             elem.style.display = "none";
@@ -60,7 +71,7 @@ function AVB(video,pos,fobj){
         }
     };
     this.showIcon = () => {
-        let elem = this.elem;
+        let elem = this.Icon;
         if(!elem)return;
         elem.style.display = "block";
         setTimeout(() => {
@@ -69,7 +80,9 @@ function AVB(video,pos,fobj){
     };
 
 
-    this.createContainer = () => {
+
+
+    this.createControlPanel = () => {
         let  mcont = document.createElement("div");
         document.body.appendChild(mcont);
         mcont.style.zIndex = 2147483647;
@@ -81,10 +94,48 @@ function AVB(video,pos,fobj){
         mcont.style.width = "200px";
         mcont.style.height = "100%";
         mcont.style.opacity = 1;
-        mcont.style.display = "block";
-        mcont.style.background = "red";
+        mcont.style.display = "none";
+        mcont.style.background = "#444";
+        mcont.style.textAlign = "center";
+        this.ctrlpanel = mcont;
+
+        let closecont = document.createElement("div");
+        mcont.appendChild(closecont); 
+        closecont.style.position = "relative";
+        closecont.style.margin = 0;
+        closecont.style.paddingTop = "24px";
+        closecont.style.paddingBottom = "24px";
+
+        let lbl = document.createElement("label");
+        closecont.appendChild(lbl); 
+        lbl.textContent = "Color Adjustment";
+        lbl.style.fontSize = "14px";
+        lbl.style.fontFamily = "Arial, sans-serif";
+        lbl.style.color = "#ccc";
+
+        let icon = document.createElement("div");
+        closecont.appendChild(icon); 
+        icon.style.position = "absolute";
+        icon.style.top = 0;
+        icon.style.right = 0;
+        icon.style.padding = "3px";
+        icon.style.width = "20px";
+        icon.style.height = "20px";
+        icon.style.background = "red";
+        icon.addEventListener("click",(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            this.hideControlpanel();
+        },true);
+
+
         let  cont = document.createElement("div");
         mcont.appendChild(cont); 
+        cont.style.position = "relative";
+        cont.style.margin = 0;
+        cont.style.padding = 0;
+        cont.style.paddingTop = "24px";
+        cont.style.paddingBottom = "24px";
 
         this.createSlideBar(300,0,1,100,"br",cont);
         this.createSlideBar(300,0,1,100,"co",cont);
@@ -96,6 +147,10 @@ function AVB(video,pos,fobj){
     this.createSlideBar = (max,min,step,val,name,pcont) => {
         let  cont = document.createElement("div");
         pcont.appendChild(cont);
+        cont.style.margin = 0;
+        cont.style.padding = 0;
+        cont.style.paddingTop = "12px";
+
         let  range = document.createElement("input");
         cont.appendChild(range);
 
@@ -128,7 +183,14 @@ function AVB(video,pos,fobj){
         video.style.setProperty("-webkit-filter", css, "important")
         video.style.setProperty("filter", css, "important")
     };
-
+    this.showControlPanel = (e) => {
+        let pelem = this.ctrlpanel;
+        pelem.style.display = "block";
+    };
+    this.hideControlpanel = (e) => {
+        let pelem = this.ctrlpanel;
+        pelem.style.display = "none";
+    };
 
 
 
@@ -169,7 +231,7 @@ function AVB(video,pos,fobj){
         return false;
     };
     this.setPosition = (pos) => {
-        let elem = this.elem;
+        let elem = this.Icon;
         elem.style.height = this.h +"px";
         elem.style.width = this.w +"px";
         elem.style.top = pos.top + this.t + "px";
@@ -214,21 +276,18 @@ const AVBs = {
                 this.items.push(avb);
                 this.resizeObserver.observe(video);
 
-                avb.showIcon();
-
-
-                // let tid1 = null;
-                // let tid2 = null;       
-                // video.parentNode.parentNode.addEventListener("mousemove",( e ) => {
-                //     clearTimeout(tid1);
-                //     clearTimeout(tid2);
-                //     tid1 = setTimeout(() => {
-                //         avb.showIcon();
-                //     },10);
-                //     tid2 = setTimeout(() =>{
-                //         avb.hideIcon();
-                //     },3600);
-                // },true);
+                let tid1 = null;
+                let tid2 = null;       
+                video.parentNode.parentNode.addEventListener("mousemove",( e ) => {
+                    clearTimeout(tid1);
+                    clearTimeout(tid2);
+                    tid1 = setTimeout(() => {
+                        avb.showIcon();
+                    },10);
+                    tid2 = setTimeout(() =>{
+                        avb.hideIcon();
+                    },3600);
+                },true);
             });
         }else if (count < 8) {
             setTimeout(() => {
