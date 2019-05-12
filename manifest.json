@@ -1,7 +1,7 @@
 {
    "manifest_version": 2,
    "name": "Adjust Video Brightness",
-   "description": "Adjust Video Brightness",
+   "description": "Adjust Video Brightness & Playback Rate",
    "content_scripts": [ {
       "all_frames": true,
       "run_at": "document_end",

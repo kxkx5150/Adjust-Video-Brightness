@@ -134,7 +134,7 @@ function AVB(video,pos,fobj){
 
         let lbl = document.createElement("label");
         closecont.appendChild(lbl); 
-        lbl.textContent = "Color Adjustment";
+        lbl.textContent = "Brightness & Color";
         lbl.style.fontSize = "14px";
         lbl.style.fontFamily = "Arial, sans-serif";
         lbl.style.color = "#ccc";
@@ -147,13 +147,12 @@ function AVB(video,pos,fobj){
         icon.style.padding = "3px";
         icon.style.width = "20px";
         icon.style.height = "20px";
-        icon.style.background = "red";
+        icon.style.background = "black";
         icon.addEventListener("click",(e) => {
             e.stopPropagation();
             e.preventDefault();
             this.hideControlpanel();
         },true);
-
 
         let  cont = document.createElement("div");
         mcont.appendChild(cont); 
@@ -169,7 +168,49 @@ function AVB(video,pos,fobj){
         this.createSlideBar(360,0,1,0,"hu",cont);
         this.createSlideBar(1,0,0.1,0,"gr",cont);
         this.createSlideBar(1,0,0.1,0,"se",cont);
+
+
+        this.createSpeedInput(mcont);
+
     };
+    this.createSpeedInput = (mcont) => {
+        let  cont = document.createElement("div");
+        mcont.appendChild(cont); 
+        cont.style.paddingTop = "24px";
+        cont.style.paddingBottom = "24px";
+
+
+        let  lblcont = document.createElement("div");
+        cont.appendChild(lblcont); 
+        let lbl = document.createElement("label");
+        lblcont.appendChild(lbl); 
+        lbl.textContent = "Playback Rate";
+        lbl.style.fontSize = "14px";
+        lbl.style.fontFamily = "Arial, sans-serif";
+        lbl.style.color = "#ccc";
+
+
+
+
+        let ninpt = document.createElement("input");
+        cont.appendChild(ninpt);
+        ninpt.setAttribute("type","number");
+        ninpt.setAttribute("max",4.0);
+        ninpt.setAttribute("min",0.5);
+        ninpt.setAttribute("step",0.02);
+        ninpt.setAttribute("value",1);
+        ninpt.style.fontSize = "18px";
+        ninpt.style.fontFamily = "Arial, sans-serif";
+        ninpt.style.margin = 0;
+        ninpt.style.padding = "2px";
+        ninpt.style.width = "100px";
+        ninpt.style.textAlign = "center";
+        ninpt.addEventListener("change",(e) => {
+            this.video.playbackRate = e.target.value;
+            e.stopPropagation();
+        },true);;
+    };
+
     this.createSlideBar = (max,min,step,val,name,pcont) => {
         let  cont = document.createElement("div");
         pcont.appendChild(cont);
@@ -206,7 +247,6 @@ function AVB(video,pos,fobj){
         +"hue-rotate("+fobj.hu+"deg) "
         +"sepia("+fobj.se+") "
         +"grayscale("+fobj.gr+")";
-        video.style.setProperty("-webkit-filter", css, "important")
         video.style.setProperty("filter", css, "important")
     };
     this.showControlPanel = (e) => {
