@@ -8,6 +8,10 @@
       "js": [ "contentscript.js" ],
       "matches": [ "<all_urls>" ]
    } ],
+   "web_accessible_resources": [
+      "icon24.png",
+      "close.png"
+   ],
    "icons": {
       "32": "icon32.png",
       "48": "icon48.png",

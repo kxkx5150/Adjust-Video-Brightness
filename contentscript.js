@@ -1,3 +1,5 @@
+let ipng = chrome.extension.getURL('icon24.png');
+let cpng = chrome.extension.getURL('close.png');
 function AVB(video,pos,fobj){
 
     this.on = false;
@@ -19,8 +21,8 @@ function AVB(video,pos,fobj){
         this.fobj = {
             br:100,
             co:100,
-            sa:500,
-            hu:360,
+            sa:100,
+            hu:0,
             gr:0,
             se:0
         };    
@@ -58,7 +60,7 @@ function AVB(video,pos,fobj){
         }
     };
     this.createIcon = () => {
-        let cont = document.createElement("div");
+        let cont = document.createElement("img");
         document.body.appendChild(cont);
         cont.style.display = "none";
         cont.style.position = "absolute";
@@ -72,7 +74,13 @@ function AVB(video,pos,fobj){
         cont.style.transitionProperty = "opacity";        
         cont.style.height = this.h + "px";
         cont.style.width = this.h + "px";
-        cont.style.background = "blue";
+        cont.style.background = "#aaa";
+        cont.style.borderRadius = "3px";
+        cont.src = ipng;
+
+
+
+
         cont.addEventListener("click",(e) => {
             e.stopPropagation();
             e.preventDefault();
@@ -139,20 +147,51 @@ function AVB(video,pos,fobj){
         lbl.style.fontFamily = "Arial, sans-serif";
         lbl.style.color = "#ccc";
 
-        let icon = document.createElement("div");
+        let icon = document.createElement("img");
         closecont.appendChild(icon); 
         icon.style.position = "absolute";
-        icon.style.top = 0;
-        icon.style.right = 0;
-        icon.style.padding = "3px";
-        icon.style.width = "20px";
-        icon.style.height = "20px";
-        icon.style.background = "black";
+        icon.style.top = "3px";
+        icon.style.right = "3px";
+        icon.style.padding = 0;
+        icon.style.width = "24px";
+        icon.style.height = "24px";
+        icon.src = cpng;
         icon.addEventListener("click",(e) => {
             e.stopPropagation();
             e.preventDefault();
             this.hideControlpanel();
         },true);
+
+
+
+        let  rcont = document.createElement("div");
+        mcont.appendChild(rcont); 
+        let rbtn = document.createElement("button");
+        mcont.appendChild(rbtn); 
+        rbtn.textContent = "Reset";
+        rbtn.style.padding = "2px";
+        rbtn.style.width = "80px";
+
+
+
+        rbtn.addEventListener("click",(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            this.resetSlideBar();           
+            this.fobj = {
+                br:100,
+                co:100,
+                sa:100,
+                hu:0,
+                gr:0,
+                se:0
+            };
+            this.attachCSS();
+        },true);
+
+
+
+
 
         let  cont = document.createElement("div");
         mcont.appendChild(cont); 
@@ -179,18 +218,15 @@ function AVB(video,pos,fobj){
         cont.style.paddingTop = "24px";
         cont.style.paddingBottom = "24px";
 
-
         let  lblcont = document.createElement("div");
         cont.appendChild(lblcont); 
         let lbl = document.createElement("label");
         lblcont.appendChild(lbl); 
+        lblcont.style.padding = "4px 0 16px 0";
         lbl.textContent = "Playback Rate";
         lbl.style.fontSize = "14px";
         lbl.style.fontFamily = "Arial, sans-serif";
         lbl.style.color = "#ccc";
-
-
-
 
         let ninpt = document.createElement("input");
         cont.appendChild(ninpt);
@@ -202,9 +238,11 @@ function AVB(video,pos,fobj){
         ninpt.style.fontSize = "18px";
         ninpt.style.fontFamily = "Arial, sans-serif";
         ninpt.style.margin = 0;
-        ninpt.style.padding = "2px";
+        ninpt.style.padding = "3px";
         ninpt.style.width = "100px";
         ninpt.style.textAlign = "center";
+        ninpt.style.borderRadius = "12px";
+        ninpt.style.border = 0;
         ninpt.addEventListener("change",(e) => {
             this.video.playbackRate = e.target.value;
             e.stopPropagation();
@@ -228,19 +266,41 @@ function AVB(video,pos,fobj){
         range.setAttribute("value",val);
         this.attachRangeEvent(range,name);
     };
+    this.resetSlideBar = () => {
+        let panel = this.ctrlpanel; 
+        let rs = panel.querySelectorAll("input[type='range']")
+        for (let r of rs){
+            let name = r.getAttribute("data-val");
+            if(name === "br"){
+                r.value = 100;
+            }else if(name === "co"){
+                r.value = 100;
+            }else if(name === "sa"){
+                r.value = 100;
+            }else if(name === "hu"){
+                r.value = 0;
+            }else if(name === "se"){
+                r.value = 0;
+            }else if(name === "gr"){
+                r.value = 0;
+
+            }
+
+        }
+    };
     this.attachRangeEvent = (range,name) => {
         range.setAttribute("data-val",name);
         range.addEventListener("change",(e) => {
-            var range = e.target;
-            var name = range.getAttribute("data-val");
+            let range = e.target;
+            let name = range.getAttribute("data-val");
             this.fobj[name] = range.value;
             this.attachCSS();
         });
     }
     this.attachCSS = () => {
-        var video = this.video;
-        var fobj = this.fobj;
-        var css = ""
+        let video = this.video;
+        let fobj = this.fobj;
+        let css = ""
         +"brightness("+fobj.br+"%) "
         +"contrast("+fobj.co+"%) "
         +"saturate("+fobj.sa+"%) "
