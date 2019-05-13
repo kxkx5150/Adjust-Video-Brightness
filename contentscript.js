@@ -119,6 +119,8 @@ function AVB(video,pos,fobj){
     this.createControlPanel = () => {
         let  mcont = document.createElement("div");
         document.body.appendChild(mcont);
+        mcont.style.fontFamily = "Arial, sans-serif";
+        mcont.style.fontSize = "12px";
         mcont.style.zIndex = 2147483647;
         mcont.style.position = "fixed";
         mcont.style.top = 0;
@@ -137,15 +139,13 @@ function AVB(video,pos,fobj){
         mcont.appendChild(closecont); 
         closecont.style.position = "relative";
         closecont.style.margin = 0;
-        closecont.style.paddingTop = "24px";
-        closecont.style.paddingBottom = "24px";
+        closecont.style.padding = "16px 3px 24px 3px";
 
         let lbl = document.createElement("label");
         closecont.appendChild(lbl); 
         lbl.textContent = "Brightness & Color";
         lbl.style.fontSize = "14px";
-        lbl.style.fontFamily = "Arial, sans-serif";
-        lbl.style.color = "#ccc";
+        lbl.style.color = "aquamarine";
 
         let icon = document.createElement("img");
         closecont.appendChild(icon); 
@@ -162,17 +162,17 @@ function AVB(video,pos,fobj){
             this.hideControlpanel();
         },true);
 
-
-
         let  rcont = document.createElement("div");
         mcont.appendChild(rcont); 
         let rbtn = document.createElement("button");
         mcont.appendChild(rbtn); 
         rbtn.textContent = "Reset";
         rbtn.style.padding = "2px";
-        rbtn.style.width = "80px";
-
-
+        rbtn.style.width = "100px";
+        rbtn.style.margin = 0;
+        rbtn.style.padding = "4px";
+        rbtn.style.border = 0;
+        rbtn.style.borderRadius = "10px";
 
         rbtn.addEventListener("click",(e) => {
             e.stopPropagation();
@@ -189,24 +189,20 @@ function AVB(video,pos,fobj){
             this.attachCSS();
         },true);
 
-
-
-
-
         let  cont = document.createElement("div");
         mcont.appendChild(cont); 
         cont.style.position = "relative";
         cont.style.margin = 0;
         cont.style.padding = 0;
-        cont.style.paddingTop = "24px";
-        cont.style.paddingBottom = "24px";
+        cont.style.paddingTop = "18px";
+        cont.style.paddingBottom = "18px";
 
-        this.createSlideBar(300,0,1,100,"br",cont);
-        this.createSlideBar(300,0,1,100,"co",cont);
-        this.createSlideBar(500,0,1,100,"sa",cont);
-        this.createSlideBar(360,0,1,0,"hu",cont);
-        this.createSlideBar(1,0,0.1,0,"gr",cont);
-        this.createSlideBar(1,0,0.1,0,"se",cont);
+        this.createSlideBar(300,0,1,100,"br","Brightness",cont);
+        this.createSlideBar(300,0,1,100,"co","Contrast",cont);
+        this.createSlideBar(500,0,1,100,"sa","Saturate",cont);
+        this.createSlideBar(360,0,1,0,"hu","Hue-rotate",cont);
+        this.createSlideBar(1,0,0.1,0,"gr","Sepia",cont);
+        this.createSlideBar(1,0,0.1,0,"se","Grayscale",cont);
 
 
         this.createSpeedInput(mcont);
@@ -216,17 +212,16 @@ function AVB(video,pos,fobj){
         let  cont = document.createElement("div");
         mcont.appendChild(cont); 
         cont.style.paddingTop = "24px";
-        cont.style.paddingBottom = "24px";
+        cont.style.paddingBottom = "8px";
 
         let  lblcont = document.createElement("div");
         cont.appendChild(lblcont); 
         let lbl = document.createElement("label");
         lblcont.appendChild(lbl); 
-        lblcont.style.padding = "4px 0 16px 0";
+        lblcont.style.padding = "4px 0 8px 0";
         lbl.textContent = "Playback Rate";
         lbl.style.fontSize = "14px";
-        lbl.style.fontFamily = "Arial, sans-serif";
-        lbl.style.color = "#ccc";
+        lbl.style.color = "deeppink";
 
         let ninpt = document.createElement("input");
         cont.appendChild(ninpt);
@@ -236,7 +231,6 @@ function AVB(video,pos,fobj){
         ninpt.setAttribute("step",0.02);
         ninpt.setAttribute("value",1);
         ninpt.style.fontSize = "18px";
-        ninpt.style.fontFamily = "Arial, sans-serif";
         ninpt.style.margin = 0;
         ninpt.style.padding = "3px";
         ninpt.style.width = "100px";
@@ -249,14 +243,25 @@ function AVB(video,pos,fobj){
         },true);;
     };
 
-    this.createSlideBar = (max,min,step,val,name,pcont) => {
+    this.createSlideBar = (max,min,step,val,name,lbltxt,pcont) => {
         let  cont = document.createElement("div");
         pcont.appendChild(cont);
         cont.style.margin = 0;
         cont.style.padding = 0;
-        cont.style.paddingTop = "12px";
+        cont.style.paddingTop = "8px";
 
-        let  range = document.createElement("input");
+        let lcont = document.createElement("div");
+        cont.appendChild(lcont);
+        let lbl = document.createElement("label");
+        lcont.appendChild(lbl);
+        lbl.style.margin = 0;
+        lbl.style.padding = "3px";
+        lbl.style.width = "100px";
+        lbl.style.textAlign = "center";
+        lbl.style.color = "#999";
+        lbl.textContent = lbltxt;
+
+        let range = document.createElement("input");
         cont.appendChild(range);
 
         range.setAttribute("type","range");
