@@ -132,6 +132,7 @@ function AVB(video,pos,fobj){
         mcont.style.opacity = 1;
         mcont.style.display = "none";
         mcont.style.background = "#444";
+        mcont.style.color = "#eee"
         mcont.style.textAlign = "center";
         this.ctrlpanel = mcont;
 
@@ -172,7 +173,9 @@ function AVB(video,pos,fobj){
         rbtn.style.margin = 0;
         rbtn.style.padding = "4px";
         rbtn.style.border = 0;
+        rbtn.style.background = "#ccc";
         rbtn.style.borderRadius = "10px";
+        rbtn.style.color = "#222"
 
         rbtn.addEventListener("click",(e) => {
             e.stopPropagation();
@@ -237,6 +240,7 @@ function AVB(video,pos,fobj){
         ninpt.style.textAlign = "center";
         ninpt.style.borderRadius = "12px";
         ninpt.style.border = 0;
+        rbtn.style.color = "#222"
         ninpt.addEventListener("change",(e) => {
             this.video.playbackRate = e.target.value;
             e.stopPropagation();
