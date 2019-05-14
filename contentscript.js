@@ -175,7 +175,7 @@ function AVB(video,pos,fobj){
         rbtn.style.border = 0;
         rbtn.style.background = "#ccc";
         rbtn.style.borderRadius = "10px";
-        rbtn.style.color = "#222"
+        rbtn.style.color = "#222";
 
         rbtn.addEventListener("click",(e) => {
             e.stopPropagation();
@@ -240,7 +240,7 @@ function AVB(video,pos,fobj){
         ninpt.style.textAlign = "center";
         ninpt.style.borderRadius = "12px";
         ninpt.style.border = 0;
-        rbtn.style.color = "#222"
+        ninpt.style.color = "#222"
         ninpt.addEventListener("change",(e) => {
             this.video.playbackRate = e.target.value;
             e.stopPropagation();
@@ -309,14 +309,19 @@ function AVB(video,pos,fobj){
     this.attachCSS = () => {
         let video = this.video;
         let fobj = this.fobj;
-        let css = ""
+        let str = ""
         +"brightness("+fobj.br+"%) "
         +"contrast("+fobj.co+"%) "
         +"saturate("+fobj.sa+"%) "
         +"hue-rotate("+fobj.hu+"deg) "
         +"sepia("+fobj.se+") "
         +"grayscale("+fobj.gr+")";
-        video.style.setProperty("filter", css, "important")
+
+        video.style.setProperty("filter", str, "important");
+        let css = 'video{filter : '+ str +' !important}'
+        var style = document.createElement("style") ;
+        style.appendChild( document.createTextNode(css) ) ;
+        document.head.appendChild(style) ;
     };
     this.showControlPanel = (e) => {
         let pelem = this.ctrlpanel;
@@ -326,15 +331,6 @@ function AVB(video,pos,fobj){
         let pelem = this.ctrlpanel;
         pelem.style.display = "none";
     };
-
-
-
-
-
-
-
-
-
     this.resize = () => {
         this.getVideoPosition();
     };
@@ -358,12 +354,22 @@ function AVB(video,pos,fobj){
             let left = (body.scrollLeft || html.scrollLeft) - html.clientLeft + recl;
             let top =  (body.scrollTop || html.scrollTop ) - html.clientTop + rect.top;
             if(top < 0)top = 0;
-            return {
+            if(left < 0)left = 0;
+            var pos = {
                 top:top,
                 left: left,
                 width:rect.width,
                 height:rect.height
             };
+            return pos;
+        }else if(video.style.position === "absolute" && video.style.width === "100%" && video.style.height === "100%"){
+            var pos = {
+                top:0,
+                left: 0,
+                width:window.innerWidth,
+                height:window.innerHeight
+            };
+            return pos;
         }
         return false;
     };
@@ -387,8 +393,7 @@ const AVBs = {
     init:function(count){
         let videos = document.querySelectorAll("video");        
         if(0 < videos.length){
-            this.attachEvent();
-            videos.forEach((video, index) => {
+            let vfunc = (video) => {
                 let pos = {
                     height:24,
                     width:24,
@@ -397,9 +402,6 @@ const AVBs = {
                     right:12,
                     lflg:true
                 };
-
-
-
                 let fobj = {
                     br:100,
                     co:100,
@@ -408,10 +410,29 @@ const AVBs = {
                     gr:0,
                     se:0
                 };    
-
                 let avb = new AVB(video,pos,fobj);
                 this.items.push(avb);
                 this.resizeObserver.observe(video);
+                let func = () => {
+                    avb.resize();
+                };
+                if(1 < video.readyState)func();
+                video.addEventListener("loadeddata",( e ) => {
+                    console.log("---loadeddata---")
+                    func();
+                },true);
+                video.addEventListener("durationchange",( e ) => {
+                    console.log("---durationchange---")
+                    func();
+                },true);
+                video.addEventListener("canplay",( e ) => {
+                    console.log("---canplay---")
+                    func();
+                },true); 
+            };
+            this.attachEvent(vfunc);
+            videos.forEach((video, index) => {
+                vfunc(video)
             });
         }else if (count < 8) {
             setTimeout(() => {
@@ -419,13 +440,29 @@ const AVBs = {
             },1000);
         }
     },
-    attachEvent:function(){
+    attachEvent:function(vfunc){
         let tid = null;
         this.resizeObserver = new ResizeObserver(entries => {
             clearTimeout(tid);
             tid = setTimeout(() => {
                 this.resize();
             },1100);
+        });
+        let attrModified = (mutation) => {
+            let addnodes = mutation.addedNodes;
+            if (addnodes.length < 1) return;
+            addnodes.forEach((node, index) => {
+                if(node.tagName === "VIDEO"){
+                    vfunc(node);
+                }
+            });
+        }
+        this.observer = new MutationObserver(function(mutations) {
+            mutations.forEach(attrModified);
+        });
+        this.observer.observe(document.body, {
+            childList: true,
+            subtree: true
         });
         document.addEventListener("fullscreenchange", (e) => {
             this.resize();
