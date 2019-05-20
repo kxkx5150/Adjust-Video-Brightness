@@ -77,10 +77,6 @@ function AVB(video,pos,fobj){
         cont.style.background = "#aaa";
         cont.style.borderRadius = "3px";
         cont.src = ipng;
-
-
-
-
         cont.addEventListener("click",(e) => {
             e.stopPropagation();
             e.preventDefault();
@@ -112,10 +108,6 @@ function AVB(video,pos,fobj){
             elem.style.opacity = 1;
         },10);
     };
-
-
-
-
     this.createControlPanel = () => {
         let  mcont = document.createElement("div");
         document.body.appendChild(mcont);
@@ -206,16 +198,39 @@ function AVB(video,pos,fobj){
         this.createSlideBar(360,0,1,0,"hu","Hue-rotate",cont);
         this.createSlideBar(1,0,0.1,0,"gr","Sepia",cont);
         this.createSlideBar(1,0,0.1,0,"se","Grayscale",cont);
-
-
         this.createSpeedInput(mcont);
+        this.createPiPButton(mcont);
+    };
+    this.createPiPButton = (mcont) => {
+        let  cont = document.createElement("div");
+        mcont.appendChild(cont); 
+        cont.style.paddingTop = "16px";
 
+        let btn = document.createElement("button");
+        cont.appendChild(btn);
+        btn.appendChild(document.createTextNode('Picture\n in Picture'));
+        btn.style.fontSize = "13px";
+        btn.style.margin = 0;
+        btn.style.padding = "3px";
+        btn.style.width = "130px";
+        btn.style.textAlign = "center";
+        btn.style.borderRadius = "12px";
+        btn.style.border = 0;
+        btn.style.color = "#222"
+        btn.addEventListener("click",(e) => {
+            if (this.video !== document.pictureInPictureElement) {
+                this.video.requestPictureInPicture();
+            } else {
+                document.exitPictureInPicture();
+            }
+            e.stopPropagation();
+        },true);;
     };
     this.createSpeedInput = (mcont) => {
         let  cont = document.createElement("div");
         mcont.appendChild(cont); 
-        cont.style.paddingTop = "24px";
-        cont.style.paddingBottom = "8px";
+        cont.style.paddingTop = "20px";
+        cont.style.paddingBottom = "18px";
 
         let  lblcont = document.createElement("div");
         cont.appendChild(lblcont); 
